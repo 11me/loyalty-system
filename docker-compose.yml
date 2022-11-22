@@ -1,0 +1,24 @@
+services:
+  app:
+    container_name: app
+    build: .
+    ports:
+      - 8080:8080
+      - 9000:9000
+    depends_on:
+      - db
+    env_file:
+      - .env
+    cpu_count: 1
+  db:
+    container_name: postgres
+    image: postgres:14
+    restart: unless-stopped
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - "./pg_data:/var/lib/postgresql/data"
