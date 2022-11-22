@@ -14,6 +14,7 @@ type Config struct {
 	DbConn      string
 	DbUser      string
 	DbPass      string
+	LogLvl      string
 }
 
 func init() {
@@ -28,6 +29,7 @@ func init() {
 		DbConn:      os.Getenv("DB_CONN"),
 		DbUser:      os.Getenv("DB_USER"),
 		DbPass:      os.Getenv("DB_PASS"),
+		LogLvl:      os.Getenv("LOG_LVL"),
 	}
 }
 
