@@ -4,6 +4,8 @@ import "github.com/sirupsen/logrus"
 
 var rootLogger *logrus.Logger
 
+type Fields = logrus.Fields
+
 type Logger struct {
 	*logrus.Entry
 }

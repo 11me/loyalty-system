@@ -2,10 +2,11 @@ package main
 
 import (
 	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
+	chiMiddleware "github.com/go-chi/chi/v5/middleware"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"log"
 	"loyalty-system/handler"
+	"loyalty-system/middleware"
 	"net/http"
 	"time"
 )
@@ -23,7 +24,9 @@ func (s *Server) ServeMetrics() {
 func NewServer() *Server {
 	router := chi.NewRouter()
 
-	router.Use(middleware.Recoverer)
+	router.Use(middleware.RequestID)
+	router.Use(middleware.Logger)
+	router.Use(chiMiddleware.Recoverer)
 	router.Get("/inspect/health", handler.GetHealth())
 
 	srv := &http.Server{
