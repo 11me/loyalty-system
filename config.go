@@ -11,9 +11,7 @@ var cfg *Config
 type Config struct {
 	SvcAddr     string
 	MetricsAddr string
-	DbConn      string
-	DbUser      string
-	DbPass      string
+	DbDSN       string
 	LogLvl      string
 }
 
@@ -26,9 +24,7 @@ func init() {
 	cfg = &Config{
 		SvcAddr:     os.Getenv("SVC_ADDR"),
 		MetricsAddr: os.Getenv("METRICS_ADDR"),
-		DbConn:      os.Getenv("DB_CONN"),
-		DbUser:      os.Getenv("DB_USER"),
-		DbPass:      os.Getenv("DB_PASS"),
+		DbDSN:       os.Getenv("DB_DSN"),
 		LogLvl:      os.Getenv("LOG_LVL"),
 	}
 }
