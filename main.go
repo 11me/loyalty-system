@@ -11,8 +11,7 @@ import (
 )
 
 func main() {
-	err := logger.InitLogger(cfg.LogLvl)
-	if err != nil {
+	if err := logger.InitLogger(cfg.LogLvl); err != nil {
 		log.Fatalf("Failed to initialize logger %s.", err.Error())
 	}
 	l := logger.GetLogger()

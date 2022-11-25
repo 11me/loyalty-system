@@ -1,26 +1,21 @@
 package postgres
 
 import (
-	"database/sql"
-	"github.com/uptrace/bun"
-	"github.com/uptrace/bun/dialect/pgdialect"
-	"github.com/uptrace/bun/driver/pgdriver"
+	"github.com/jmoiron/sqlx"
+	_ "github.com/lib/pq"
 )
 
 type DBConn struct {
-	*bun.DB
+	*sqlx.DB
 }
 
 func NewDB(dsn string) (*DBConn, error) {
-	sqldb := sql.OpenDB(pgdriver.NewConnector(
-		pgdriver.WithDSN(dsn),
-	))
-
-	if err := sqldb.Ping(); err != nil {
+	conn, err := sqlx.Connect("postgres", dsn)
+	if err != nil {
 		return nil, err
 	}
-
-	return &DBConn{
-		bun.NewDB(sqldb, pgdialect.New()),
-	}, nil
+	if err = conn.Ping(); err != nil {
+		return nil, err
+	}
+	return &DBConn{conn}, nil
 }
