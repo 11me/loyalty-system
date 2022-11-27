@@ -3,6 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"github.com/go-playground/validator/v10"
+	"loyalty-system/pkg/logger"
 	"net/http"
 )
 
@@ -11,14 +12,17 @@ var (
 	validate        = validator.New()
 )
 
-func JSONResponse(w http.ResponseWriter, obj any) error {
+func writeJSON(w http.ResponseWriter, obj any) {
+	log := logger.GetLogger()
 	writeContentType(w, jsonContentType)
 	jsonBytes, err := json.Marshal(obj)
 	if err != nil {
-		return err
+		log.Errorf("Object marshaling failed %s", err.Error())
 	}
 	_, err = w.Write(jsonBytes)
-	return err
+	if err != nil {
+		log.Errorf("Failed to write json response %s", err.Error())
+	}
 }
 
 func writeContentType(w http.ResponseWriter, value []string) {

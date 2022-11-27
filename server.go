@@ -11,16 +11,16 @@ type Server struct {
 	*http.Server
 }
 
-func (s *Server) ServeMetrics() {
+func (s *Server) ServeMetrics(addr string) {
 	go func() {
-		log.Fatal(http.ListenAndServe(cfg.MetricsAddr, promhttp.Handler()))
+		log.Fatal(http.ListenAndServe(addr, promhttp.Handler()))
 	}()
 }
 
-func NewServer(router http.Handler) *Server {
+func NewServer(router http.Handler, addr string) *Server {
 	srv := &http.Server{
 		Handler:      router,
-		Addr:         cfg.SvcAddr,
+		Addr:         addr,
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
 	}

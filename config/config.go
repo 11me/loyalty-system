@@ -1,4 +1,4 @@
-package main
+package config
 
 import (
 	"github.com/joho/godotenv"
@@ -13,6 +13,7 @@ type Config struct {
 	MetricsAddr string
 	DbDSN       string
 	LogLvl      string
+	Secret      string
 }
 
 func init() {
@@ -26,6 +27,7 @@ func init() {
 		MetricsAddr: os.Getenv("METRICS_ADDR"),
 		DbDSN:       os.Getenv("DB_DSN"),
 		LogLvl:      os.Getenv("LOG_LVL"),
+		Secret:      os.Getenv("SECRET"),
 	}
 }
 

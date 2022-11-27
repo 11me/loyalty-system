@@ -14,7 +14,7 @@ create table loyalty_system.user
     id serial primary key,
     first_name varchar(255) not null,
     last_name varchar(255) not null,
-    email varchar(255) not null,
+    email varchar(255) unique not null,
     password_hash varchar(255) not null,
     is_admin boolean default false,
     organization_id int default null,
