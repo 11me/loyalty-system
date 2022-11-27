@@ -32,6 +32,7 @@ func main() {
 	router.Get("/inspect/health", handler.GetHealth())
 	router.Post("/api/v1/users", handler.PostUser(dbConn))
 	router.Post("/api/v1/tokens", handler.AuthUser(dbConn))
+	router.Post("/api/v1/organizations", handler.PostOrganization(dbConn))
 
 	srv := NewServer(router, cfg.SvcAddr)
 	srv.ServeMetrics(cfg.MetricsAddr)
