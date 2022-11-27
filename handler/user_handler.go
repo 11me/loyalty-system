@@ -29,7 +29,12 @@ func PostUser(db db.User) http.HandlerFunc {
 			return
 		}
 
-		checkUser, _ := db.GetUserByEmail(r.Context(), userReq.Email)
+		checkUser, err := db.GetUserByEmail(r.Context(), userReq.Email)
+		if err != nil {
+			log.Errorf("Failed to get user %s with following error %s", userReq.Email, err.Error())
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
 		if checkUser != nil {
 			log.Warnf("User with email %s already exists.", userReq.Email)
 			w.WriteHeader(http.StatusConflict)

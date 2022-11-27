@@ -22,7 +22,10 @@ func (db *DBConn) GetUserByEmail(ctx context.Context, email string) (*model.User
 	var user model.User
 	query := `SELECT * FROM loyalty_system.user WHERE email = $1`
 	err := db.Get(&user, query, email)
-	if err != nil && err != sql.ErrNoRows {
+	if err == sql.ErrNoRows {
+		return nil, nil
+	}
+	if err != nil {
 		return nil, err
 	}
 	return &user, nil
