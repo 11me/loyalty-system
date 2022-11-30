@@ -3,15 +3,13 @@ package model
 import "time"
 
 type User struct {
-	ID             int       `db:"id"`
-	FirstName      string    `db:"first_name"`
-	LastName       string    `db:"last_name"`
-	Email          string    `db:"email"`
-	PasswordHash   []byte    `db:"password_hash"`
-	IsAdmin        bool      `db:"is_admin"`
-	OrganizationID *int      `db:"organization_id"`
-	CreatedAt      time.Time `db:"created_at"`
-	UpdatedAt      time.Time `db:"updated_at"`
+	ID           int       `db:"id"`
+	FirstName    string    `db:"first_name"`
+	LastName     string    `db:"last_name"`
+	Email        string    `db:"email"`
+	PasswordHash []byte    `db:"password_hash"`
+	CreatedAt    time.Time `db:"created_at"`
+	UpdatedAt    time.Time `db:"updated_at"`
 }
 
 type PostUserRequest struct {

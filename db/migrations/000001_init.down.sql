@@ -1,1 +1,6 @@
-DROP SCHEMA IF EXISTS loyalty_system CASCADE;
+DROP TABLE IF EXISTS
+    "user",
+    organization,
+    admin_organization,
+    organization_user
+CASCADE;

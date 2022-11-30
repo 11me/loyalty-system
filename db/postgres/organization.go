@@ -5,10 +5,20 @@ import (
 	"loyalty-system/model"
 )
 
-func (db *DBConn) CreateOrganization(ctx context.Context, organization *model.Organization) error {
-	query := `INSERT INTO loyalty_system.organization (name) values ($1)`
-	_, err := db.Exec(query, organization.Name)
-	return err
+func (db *DBConn) CreateOrganization(ctx context.Context, organization *model.Organization, userID int) error {
+	query := `WITH org_t AS (INSERT INTO organization(name) VALUES ($1) RETURNING id),
+				org_u AS (
+					INSERT INTO organization_user(user_id, organization_id)
+					SELECT $2, org_t.id FROM org_t
+				)
+				INSERT INTO admin_organization(user_id, organization_id)
+				SELECT $2, org_t.id from org_t`
+
+	_, err := db.ExecContext(ctx, query, organization.Name, userID)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (db *DBConn) GetOrganizationByID(ctx context.Context, id int) (*model.Organization, error) {

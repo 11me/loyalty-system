@@ -2,7 +2,6 @@ package config
 
 import (
 	"github.com/joho/godotenv"
-	"log"
 	"os"
 )
 
@@ -16,10 +15,10 @@ type Config struct {
 	Secret      string
 }
 
-func init() {
+func InitConfig() error {
 	err := godotenv.Load()
 	if err != nil {
-		log.Println("Failed to load .env file. Probably it does not exist.")
+		return err
 	}
 
 	cfg = &Config{
@@ -29,6 +28,7 @@ func init() {
 		LogLvl:      os.Getenv("LOG_LVL"),
 		Secret:      os.Getenv("SECRET"),
 	}
+	return nil
 }
 
 func GetConfig() *Config {

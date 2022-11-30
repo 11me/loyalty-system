@@ -9,6 +9,7 @@ import (
 	"loyalty-system/model"
 	"loyalty-system/pkg/logger"
 	"net/http"
+	"strconv"
 	"time"
 )
 
@@ -18,32 +19,32 @@ func PostUser(db db.User) http.HandlerFunc {
 		log := logger.GetLogger()
 
 		if err := json.NewDecoder(r.Body).Decode(&userReq); err != nil {
-			log.Warnf("Unable to decode request body %s.", err.Error())
+			log.Warnf("unable to decode request body %s", err.Error())
 			w.WriteHeader(http.StatusUnprocessableEntity)
 			return
 		}
 
 		if err := validate.Struct(userReq); err != nil {
-			log.Warnf("Request body validation failed %s.", err.Error())
+			log.Warnf("request body validation failed %s", err.Error())
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
 
 		checkUser, err := db.GetUserByEmail(r.Context(), userReq.Email)
 		if err != nil {
-			log.Errorf("Failed to get user %s with following error %s", userReq.Email, err.Error())
+			log.Errorf("failed to get user %s with following error %s", userReq.Email, err.Error())
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 		if checkUser != nil {
-			log.Warnf("User with email %s already exists.", userReq.Email)
+			log.Warnf("user with email %s already exists", userReq.Email)
 			w.WriteHeader(http.StatusConflict)
 			return
 		}
 
 		passwordHash, err := bcrypt.GenerateFromPassword([]byte(userReq.PasswordPlain), bcrypt.DefaultCost)
 		if err != nil {
-			log.Errorf("Failed to hash a password %s.", err.Error())
+			log.Errorf("failed to hash a password %s", err.Error())
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
@@ -55,7 +56,7 @@ func PostUser(db db.User) http.HandlerFunc {
 		}
 		err = db.CreateUser(r.Context(), user)
 		if err != nil {
-			log.Errorf("Failed to create a user %s", err.Error())
+			log.Errorf("failed to create a user %s", err.Error())
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
@@ -70,31 +71,31 @@ func AuthUser(db db.User) http.HandlerFunc {
 		log := logger.GetLogger()
 
 		if err := json.NewDecoder(r.Body).Decode(&authUserReq); err != nil {
-			log.Warningf("Unable to decode token request body %s.", err.Error())
+			log.Warningf("unable to decode token request body %s", err.Error())
 			w.WriteHeader(http.StatusUnprocessableEntity)
 			return
 		}
 		if err := validate.Struct(authUserReq); err != nil {
-			log.Warningf("Invalid auth payload %s.", err.Error())
+			log.Warningf("invalid auth payload %s", err.Error())
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
 
 		user, err := db.GetUserByEmail(r.Context(), authUserReq.Email)
 		if err != nil {
-			log.Errorf("Failed to retrieve a user %s.", err.Error())
+			log.Errorf("failed to retrieve a user %s", err.Error())
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 		if user == nil {
-			log.Warnf("User with email %s not found.", authUserReq.Email)
+			log.Warnf("user with email %s not found", authUserReq.Email)
 			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
 
 		err = bcrypt.CompareHashAndPassword(user.PasswordHash, []byte(authUserReq.PasswordPlain))
 		if err != nil {
-			log.Warnf("Invalid user credentials for user with email %s.", authUserReq.Email)
+			log.Warnf("invalid user credentials for user with email %s", authUserReq.Email)
 			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
@@ -102,7 +103,7 @@ func AuthUser(db db.User) http.HandlerFunc {
 		var token string
 		token, err = generateJWT(user)
 		if err != nil {
-			log.Errorf("Failed to generate jwt %s.", err.Error())
+			log.Errorf("failed to generate jwt %s", err.Error())
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
@@ -116,8 +117,7 @@ func generateJWT(user *model.User) (string, error) {
 	signingKey := []byte(cfg.Secret)
 
 	tokenClaim := model.TokenClaim{
-		user.Email,
-		user.IsAdmin,
+		strconv.Itoa(user.ID),
 		jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 24)),
 			Issuer:    "LoyaltySystem",

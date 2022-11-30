@@ -7,10 +7,10 @@ import (
 )
 
 func (db *DBConn) CreateUser(ctx context.Context, user *model.User) error {
-	query := `INSERT INTO loyalty_system.user 
+	query := `INSERT INTO "user"
               (first_name, last_name, email, password_hash)
               VALUES ($1, $2, $3, $4)`
-	_, err := db.Exec(query, user.FirstName, user.LastName, user.Email, user.PasswordHash)
+	_, err := db.ExecContext(ctx, query, user.FirstName, user.LastName, user.Email, user.PasswordHash)
 	return err
 }
 
@@ -20,8 +20,8 @@ func (db *DBConn) GetUserByID(ctx context.Context, id int) (*model.User, error) 
 
 func (db *DBConn) GetUserByEmail(ctx context.Context, email string) (*model.User, error) {
 	var user model.User
-	query := `SELECT * FROM loyalty_system.user WHERE email = $1`
-	err := db.Get(&user, query, email)
+	query := `SELECT * FROM "user" WHERE email = $1`
+	err := db.GetContext(ctx, &user, query, email)
 	if err == sql.ErrNoRows {
 		return nil, nil
 	}
@@ -31,8 +31,20 @@ func (db *DBConn) GetUserByEmail(ctx context.Context, email string) (*model.User
 	return &user, nil
 }
 
-func (db *DBConn) UpdateUser(ctx context.Context, user *model.User, columns ...string) error {
-	return nil
+func (db *DBConn) UpdateUser(ctx context.Context, user *model.User) error {
+	query := `UPDATE user 
+              SET first_name      = $1,
+                  last_name       = $2,
+				  email           = $3,
+				  password_hash   = $4
+                `
+	_, err := db.ExecContext(ctx,
+		query,
+		user.FirstName,
+		user.LastName,
+		user.Email,
+		user.PasswordHash)
+	return err
 }
 
 func (db *DBConn) DeleteUserByID(ctx context.Context, id int) error {
